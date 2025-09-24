@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - UrbanMarket{% endblock %}
+
+{% block body %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-gem me-3"></i>Bienvenido a UrbanMarket
+                </h1>
+                <p class="lead mb-4">
+                    Descubre productos de calidad excepcional con los mejores precios del mercado. 
+                    Tu satisfacción es nuestra prioridad.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'productos' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-shopping-bag me-2"></i>Ver Productos
+                    </a>
+                    <a href="{% url 'categorias' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-tags me-2"></i>Categorías
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="fas fa-store display-1 opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Productos Destacados -->
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold text-primary">
+            <i class="fas fa-star me-3"></i>Productos Destacados
+        </h2>
+        <p class="lead text-muted">Los productos más populares y mejor valorados</p>
+        <hr class="w-25 mx-auto" style="height: 3px; background: linear-gradient(45deg, #3498db, #2c3e50);">
+    </div>
+    
+    {% if productos_destacados %}
+        <div class="row g-4">
+            {% for producto in productos_destacados %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="position-relative overflow-hidden">
+                        <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-star me-1"></i>Destacado
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-primary">{{ producto.nombre }}</h5>
+                        <p class="card-text text-muted flex-grow-1">{{ producto.descripcion|truncatewords:15 }}</p>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="h4 text-success fw-bold mb-0">
+                                    <i class="fas fa-dollar-sign"></i>{{ producto.precio }}
+                                </span>
+                                <span class="badge bg-info">
+                                    <i class="fas fa-tag me-1"></i>{{ producto.categoria.nombre }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-palette me-1"></i>{{ producto.color }}
+                                </small>
+                                <span class="badge {% if producto.stock > 10 %}bg-success{% elif producto.stock > 0 %}bg-warning{% else %}bg-danger{% endif %}">
+                                    <i class="fas fa-boxes me-1"></i>Stock: {{ producto.stock }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'detalle_producto' producto.id %}" class="btn btn-primary">
+                                <i class="fas fa-eye me-2"></i>Ver Detalles
+                            </a>
+                            <a href="{% url 'agregar_al_carrito' producto.id %}" class="btn btn-outline-success">
+                                <i class="fas fa-cart-plus me-2"></i>Agregar al Carrito
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Call to Action -->
+        <div class="text-center mt-5">
+            <a href="{% url 'productos' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-arrow-right me-2"></i>Ver Todos los Productos
+            </a>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-box-open display-1 text-muted mb-4"></i>
+            <h3 class="text-muted">No hay productos destacados disponibles</h3>
+            <p class="lead text-muted">¡Pronto tendremos productos increíbles para ti!</p>
+            <a href="{% url 'productos' %}" class="btn btn-primary">
+                <i class="fas fa-shopping-bag me-2"></i>Ver Todos los Productos
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Features Section -->
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="feature-box p-4">
+                    <i class="fas fa-shipping-fast display-4 text-primary mb-3"></i>
+                    <h5 class="fw-bold">Envío Rápido</h5>
+                    <p class="text-muted">Entrega en 24-48 horas en toda la región</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="feature-box p-4">
+                    <i class="fas fa-shield-alt display-4 text-success mb-3"></i>
+                    <h5 class="fw-bold">Compra Segura</h5>
+                    <p class="text-muted">Tus datos están protegidos con nosotros</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="feature-box p-4">
+                    <i class="fas fa-undo display-4 text-warning mb-3"></i>
+                    <h5 class="fw-bold">Devolución Fácil</h5>
+                    <p class="text-muted">30 días para devolver tu producto</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Categorías - UrbanMarket{% endblock %}
+
+{% block body %}
+<h1 class="mb-4">Categorías</h1>
+
+<div class="row">
+    {% for categoria in categorias %}
+    <div class="col-md-4 mb-3">
+        <div class="card card-hover h-100">
+            <img src="{{ categoria.imagen.url }}" class="card-img-top product-hover-scale" alt="{{ categoria.nombre }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ categoria.nombre }}</h5>
+                <p class="card-text">{{ categoria.descripcion|default:"Sin descripción" }}</p>
+                <a href="{% url 'categoria_productos' categoria.id %}" class="btn btn-primary">Ver productos</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No hay categorías disponibles.</p>
+    {% endfor %}
+</div>
+{% endblock %}
+
+

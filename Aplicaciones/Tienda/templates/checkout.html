@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Checkout - UrbanMarket{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex align-items-center mb-4">
+                <i class="fas fa-shopping-cart text-primary fa-2x me-3"></i>
+                <h1 class="mb-0 display-5 fw-bold">Finalizar Compra</h1>
+            </div>
+            
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'ver_carrito' %}" class="text-decoration-none">Carrito</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    {% if carrito %}
+        <div class="row">
+            <!-- Resumen del pedido -->
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0">
+                            <i class="fas fa-list-ul me-2"></i>Resumen del Pedido
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        {% for item in carrito %}
+                            <div class="row align-items-center border-bottom py-3 {% if not forloop.last %}mb-3{% endif %}">
+                                <div class="col-md-2">
+                                    <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" 
+                                         class="img-fluid rounded shadow-sm" style="max-height: 80px; object-fit: cover;">
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="mb-1 fw-bold">{{ item.producto.nombre }}</h6>
+                                    <p class="text-muted mb-1 small">{{ item.producto.categoria.nombre }}</p>
+                                    <span class="badge bg-secondary">Cantidad: {{ item.cantidad }}</span>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <p class="mb-0 text-muted small">Precio unitario</p>
+                                    <p class="mb-0 fw-bold">${{ item.producto.precio }}</p>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <p class="mb-0 text-muted small">Subtotal</p>
+                                    <p class="mb-0 fw-bold text-primary">${{ item.producto.precio|multiply:item.cantidad }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total y formulario -->
+            <div class="col-lg-4">
+                <!-- Total -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-calculator me-2"></i>Total del Pedido
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span>${% calcular_total carrito %}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Envío:</span>
+                            <span class="text-success">Gratis</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <strong class="fs-5">Total:</strong>
+                            <strong class="fs-5 text-primary">${% calcular_total carrito %}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario de información -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user-edit me-2"></i>Información de Entrega
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            
+                            {% if user_authenticated %}
+                                <!-- Usuario autenticado -->
+                                <div class="alert alert-info border-0" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-user-check fa-2x me-3"></i>
+                                        <div>
+                                            <h6 class="alert-heading mb-1">Comprando como:</h6>
+                                            <p class="mb-1"><strong>{{ user.first_name }} {{ user.last_name }}</strong></p>
+                                            <p class="mb-0 small">{{ user.email }}</p>
+                                        </div>
+                                    </div>
+                                    <hr class="my-2">
+                                    <p class="mb-0 small">Los datos de tu perfil se usarán automáticamente para esta compra.</p>
+                                </div>
+                            {% else %}
+                                <!-- Usuario no autenticado -->
+                                <div class="alert alert-warning border-0" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-user-times fa-2x me-3"></i>
+                                        <div>
+                                            <h6 class="alert-heading mb-1">Comprando como invitado</h6>
+                                            <p class="mb-0 small">
+                                                <a href="{% url 'login_usuario' %}" class="alert-link">Inicia sesión</a> 
+                                                o <a href="{% url 'registro_usuario' %}" class="alert-link">regístrate</a> 
+                                                para guardar tu información.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="nombre_cliente" class="form-label fw-bold">
+                                        <i class="fas fa-user me-2"></i>Nombre completo
+                                    </label>
+                                    <input type="text" id="nombre_cliente" name="nombre_cliente" required 
+                                           class="form-control" placeholder="Ingresa tu nombre completo">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="email_cliente" class="form-label fw-bold">
+                                        <i class="fas fa-envelope me-2"></i>Correo electrónico
+                                    </label>
+                                    <input type="email" id="email_cliente" name="email_cliente" required 
+                                           class="form-control" placeholder="tu@email.com">
+                                </div>
+                            {% endif %}
+                            
+                            <div class="mb-4">
+                                <label for="direccion" class="form-label fw-bold">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Dirección de entrega
+                                </label>
+                                <textarea id="direccion" name="direccion" required rows="3"
+                                          class="form-control" 
+                                          placeholder="Ingresa tu dirección completa (calle, número, ciudad, código postal)..."></textarea>
+                            </div>
+                            
+                            <!-- Métodos de pago -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-credit-card me-2"></i>Método de pago
+                                </label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="metodo_pago" id="efectivo" value="efectivo" checked>
+                                    <label class="form-check-label" for="efectivo">
+                                        <i class="fas fa-money-bill-wave me-2"></i>Pago contra entrega (Efectivo)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="metodo_pago" id="tarjeta" value="tarjeta">
+                                    <label class="form-check-label" for="tarjeta">
+                                        <i class="fas fa-credit-card me-2"></i>Tarjeta de crédito/débito
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-check-circle me-2"></i>Confirmar Compra - ${% calcular_total carrito %}
+                                </button>
+                                <a href="{% url 'ver_carrito' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Volver al Carrito
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body py-5">
+                        <i class="fas fa-shopping-cart text-muted fa-5x mb-4"></i>
+                        <h3 class="text-muted mb-3">Tu carrito está vacío</h3>
+                        <p class="text-muted mb-4">Agrega algunos productos para continuar con tu compra.</p>
+                        <a href="{% url 'productos' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-shopping-bag me-2"></i>Explorar Productos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+
+

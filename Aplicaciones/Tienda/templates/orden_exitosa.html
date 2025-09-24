@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto py-8 text-center">
+    <h2 class="text-3xl font-bold mb-4 text-green-600">¡Compra exitosa!</h2>
+    <p class="mb-4">Gracias por tu compra. Tu orden ha sido registrada correctamente.</p>
+
+    <div class="mb-6">
+        <p><strong>Número de orden:</strong> {{ orden.id }}</p>
+        <p><strong>Total pagado:</strong> ${{ orden.total }}</p>
+        <p><strong>Dirección de envío:</strong> {{ orden.direccion }}</p>
+    </div>
+
+    <a href="{% url 'home' %}" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+        Volver al inicio
+    </a>
+</div>
+{% endblock %}
