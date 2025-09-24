@@ -9,7 +9,13 @@
     {% for categoria in categorias %}
     <div class="col-md-4 mb-3">
         <div class="card card-hover h-100">
-            <img src="{{ categoria.imagen.url }}" class="card-img-top product-hover-scale" alt="{{ categoria.nombre }}">
+            {% if categoria.imagen %}
+                <img src="{{ categoria.imagen.url }}" class="card-img-top product-hover-scale" alt="{{ categoria.nombre }}">
+            {% else %}
+                <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
+                    <i class="fas fa-image fa-3x text-muted"></i>
+                </div>
+            {% endif %}>
             <div class="card-body">
                 <h5 class="card-title">{{ categoria.nombre }}</h5>
                 <p class="card-text">{{ categoria.descripcion|default:"Sin descripción" }}</p>
